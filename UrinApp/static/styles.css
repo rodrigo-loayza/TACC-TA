@@ -1,0 +1,63 @@
+html {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    height: 100%;
+    background-image: url("urin-bg.png");
+    background-size: contain; /* Resize the background image to cover the entire container */
+    background-repeat: round;
+}
+
+.button-74 {
+  background-color: #f0eac7;
+  border: 2px solid #0f0d0e;
+  box-shadow: #0f0d0e 4px 4px 0 0;
+  color: #0f0d0e;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 0 18px;
+  line-height: 50px;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-74:hover {
+  background-color: #f1eedb;
+}
+
+.button-74:active {
+  box-shadow: #0f0d0e 2px 2px 0 0;
+  transform: translate(2px, 2px);
+}
+
+@media (min-width: 768px) {
+  .button-74 {
+    min-width: 120px;
+    padding: 0 25px;
+  }
+}
+/* #f0eac7 bg */
+/* #0f0d0e border */
+.title {
+  font-family: "Playwrite FR Moderne", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-weight: bolder;
+  color: #0f0d0e;
+}
+
+.card {
+    border-color: #0f0d0e;
+}
+
+.card-header {
+    background-color: #f0eac7;
+}

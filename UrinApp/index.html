@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Clasificador de Texto en Quechua</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<link href="static/styles.css" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Playwrite+FR+Moderne&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container d-flex justify-content-center align-items-center h-100">
+		<div class="card border-2 rounded-0">
+			<div class="card-header">
+				<h1 class="title m-0 p-3">Urin Quichwa</h1>
+			</div>
+			<div class="card-body px-4">
+				<div class="form-floating">
+					<textarea class="form-control" placeholder="Ingresa el texto a verificar" id="textareaQuechua"
+						style="height: 200px" required></textarea>
+					<label for="floatingTextarea">📝 Verifica tu texto en Quechua</label>
+				</div>
+				<div class="text-center mt-2" id="result"></div>
+				<div class="d-flex justify-content-center mt-3 py-0">
+					<button class="button-74" role="button" onclick="classifyText()">
+						Verificar
+						<span class="ms-1 spinner-border spinner-border-sm d-none" id="verifying"
+							aria-hidden="true"></span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		async function classifyText() {
+			let textareaQuechua = document.getElementById("textareaQuechua").value;
+			textareaQuechua = textareaQuechua === "" ? textareaQuechua : textareaQuechua.trim();
+			let resultDiv = document.getElementById("result");
+			let verifyingLoad = document.getElementById("verifying");
+
+			if (textareaQuechua === "")
+				resultDiv.innerHTML = 'Por favor <span class="badge text-bg-info">inserta</span> un texto.';
+			else {
+				// Carga
+				verifyingLoad.classList.remove("d-none");
+				resultDiv.innerHTML = "";
+
+				const response = await fetch("http://localhost:8080/verify", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({ text: textareaQuechua })
+				});
+
+				const data = await response.json();
+				if (data.correct) {
+					resultDiv.innerHTML = 'Tu texto está <span class="badge text-bg-danger">incorrecto</span>.';
+				} else {
+					resultDiv.innerHTML = 'Tu texto está <span class="badge text-bg-success">correcto</span>.';
+				}
+				verifyingLoad.classList.add("d-none");
+			}
+		}
+	</script>
+</body>
+
+</html>

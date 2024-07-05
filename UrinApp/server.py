@@ -1,16 +1,13 @@
-import time
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from keras.models import load_model
+from keras.preprocessing.sequence import pad_sequences
 from pydantic import BaseModel
 import pickle
 
 app = FastAPI()
-
-# Cargar el modelo de clasificación
-# with open("model.pkl", "rb") as f:
-#     model = pickle.load(f)
 
 # Configuración de CORS
 app.add_middleware(
@@ -19,7 +16,7 @@ app.add_middleware(
         "*"
     ],  # Permitir todas las orígenes, puedes especificar dominios específicos aquí
     allow_credentials=True,
-    allow_methods=["*"],  # Permitir todos los métodos
+    allow_methods=["*"],  # PerDOmitir todos los métodos
     allow_headers=["*"],  # Permitir todos los headers
 )
 
@@ -37,24 +34,29 @@ async def read_index():
     return FileResponse("index.html")
 
 
+# Cargar el modelo y el tokenizador
+modelNN = load_model("modelNN.h5")
+with open("tokenizerNN.pkl", "rb") as handle:
+    tokenizerNN = pickle.load(handle)
+
+
 @app.post("/verify")
 def send_message(payload: Payload):
-    time.sleep(1.5)
-
-    # count_vectorizer = pickle.load(open("count_vectorizer.pickle", "rb"))
-    # decision_tree_classifier = pickle.load(
-    #     open("decision_tree_classifier.pickle", "rb")
-    # )
-    # rules = pickle.load(open("rules.pickle", "rb"))
-    # utterances_examples = pickle.load(open("utterances_examples.pickle", "rb"))
-
     text = payload.text
-    if text != "Contraseña":
-        result = False
-    else:
-        result = True
+    try:
+        maxlen = 1000
+        # Preprocesar la entrada
+        sequences = tokenizerNN.texts_to_sequences([text])
+        padded_sequences = pad_sequences(sequences, padding="post", maxlen=maxlen)
 
-    return {"text": text, "correct": result}
+        # Hacer predicción
+        prediction = modelNN.predict(padded_sequences)
+        predicted_label = int(round(prediction[0][0]))
+        result = False if predicted_label == 0 else True
+        return {"text": text, "correct": result}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
